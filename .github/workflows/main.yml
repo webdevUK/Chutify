@@ -10,8 +10,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Configure Git
         run: |
@@ -20,7 +18,7 @@ jobs:
 
       - name: Remove Unwanted Files
         run: |
-          # Remove common useless files
+          # Remove common files
           rm -rf README.md
           rm -rf README*
           rm -rf LICENSE
@@ -31,23 +29,26 @@ jobs:
           rm -rf SECURITY*
           rm -rf .gitattributes
 
-          # Remove docs/examples/screenshots
+          # Remove folders
           rm -rf docs
           rm -rf screenshots
           rm -rf examples
           rm -rf demo
 
-          # Remove GitHub metadata except this workflow
+          # Remove large junk files
+          find . -name "*.apk" -delete
+          find . -name "*.zip" -delete
+          find . -name "*.mp4" -delete
+          find . -name "*.bak" -delete
+          find . -name "*.tmp" -delete
+
+          # Keep only workflow files inside .github
           find .github -mindepth 1 \
             ! -path ".github/workflows" \
             ! -path ".github/workflows/*" \
             -exec rm -rf {} +
 
-          # Optional cleanup
-          find . -name "*.bak" -delete
-          find . -name "*.tmp" -delete
-
-      - name: Create Fresh Git History
+      - name: Create Fresh Commit
         run: |
           git checkout --orphan latest_branch
 
